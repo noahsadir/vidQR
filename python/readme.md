@@ -4,9 +4,16 @@
 
     python3 encode.py -p [PATH] OPTIONAL_ARGS
 
+### Required Arguments
+
 Short | Long | Description | Default
 ----- | ---- | ----------- | --------
 -p | --path | Input path | None
+
+### Optional Arguments
+
+Short | Long | Description | Default
+----- | ---- | ----------- | --------
 -o | --output | Output path (w/ file) | {WORKING_DIR}/vidqr.gif
 -v | --version | QR Code version (1 to 40) | 10
 -e | --errcorrect | Error correction level (0 to 3) | 0
@@ -27,9 +34,17 @@ Full:
 
     python3 decode.py -p [PATH] OPTIONAL_ARGS
 
+### Required Arguments
+
 Short | Long | Description | Default
 ----- | ---- | ----------- | --------
 -p | --path | Input path | None
+
+
+### Optional Arguments
+
+Short | Long | Description | Default
+----- | ---- | ----------- | --------
 -o | --output | Output folder (w/o file) | {WORKING_DIR}
 -n | --name | Output file name (w/o extension) | output
 -v | --verbose | Display debug messages | false
