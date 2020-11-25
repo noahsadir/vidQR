@@ -4,7 +4,11 @@
 
 See the individual folders for usage data specific to that program.
 
-In general, put a file into an encoder to recieve a vidQR code and scan that code with a decoder to retrieve the file back.
+In general, put a file into an encoder to receive a vidQR code and scan that code with a decoder to retrieve the file back.
+
+## Purpose
+
+A single traditional QR code is immensely useful, but doesn't store that much data. This program attempts to address that issue (and introduce a whole host of other ones) Turns a file into a series of QR codes.
 
 ## Technical Details
 
@@ -30,10 +34,16 @@ For each code detected by the scanner:
 
 The program keeps scanning until each packet is stored. All the strings are combined (in order) into a single string and decoded back into binary, which is then stored as a file with the extension specified in the metadata.
 
----
-
 ## FAQ
 
 ### What are practical uses for this?
 
 I have no idea. This is something I made out of sheer boredom and curiosity.
+
+### What's the largest amount of data I can store with this?
+
+Since the maximum storage capacity of a QR code (Version 40) is just over 3 KB and the packets are stored as a 32-bit integer, you could theoretically encode a 12TB file in 4,294,967,295 packets. Please don't do this.
+
+### Why is the packet ID a 32-bit int. Will you really to store that many packets?
+
+Probably not. I might change it. Ideally, a 24-bit int seems most appropriate, but it would be a pain to deal with.
