@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<link rel="manifest" href="manifest.webmanifest">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="favicon-32x32.png">
+<style>
+body{
+  font-family: sans-serif;
+  position: fixed;
+  margin: 0px;
+  padding: 0px;
+  touch-action: manipulation;
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none;
+}
+#hud{
+  position: fixed;
+  width: 100vw;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  height: 64px;
+  margin: 0px;
+  padding: 0px;
+  background-color: #EEEEEE;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+#footer{
+  position: fixed;
+  width: 100vw;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  height: calc(64px + env(safe-area-inset-bottom, 0px));
+  margin: 0px;
+  padding: 0px;
+  background-color: #EEEEEE;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 -1px 2px rgba(0,0,0,0.24);
+}
+label{
+  position:fixed;
+  font-size:14px;
+  text-align:left;
+  color:#444444;
+}
+button{
+  position: fixed;
+  color:#ffffff;
+  background-color:#1abc9c;
+  font-size:16px;
+  text-align:center;
+  border:none;
+  padding: 0px;
+
+  border-radius:8px;
+}
+#content{
+  position: fixed;
+  top: 64px;
+  bottom: 64px;
+  left: 0px;
+  right: 0px;
+  height: calc(calc(100%) - calc(128px + env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px)));
+}
+#canvas{
+  position: fixed;
+  left: 0px;
+  top:64px;
+  height: calc(calc(100%) - calc(128px + env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px)));
+  left: calc(calc(50vw) - calc(calc(calc(100vh) - calc(128px + env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px))) / 4));
+
+}
+.flex-container {
+  display: flex;
+  flex-wrap: nowrap;
+  background-color: DodgerBlue;
+}
+
+.flex-container > div {
+  width: 100%;
+  margin: 0px;
+  margin-top: 8px;
+  text-align: center;
+  line-height: 64px;
+}
+
+</style>
+<html style="position:fixed">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="HandheldFriendly" content="true" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="theme-color" content="#eeeeee">
+  <title>Tetris</title>
+</head>
+<body id="game">
+  <div id="hud">
+    <label id="overlayText" style="width:128px;height:48px;line-height: 48px;top:8px;left:calc(50vw - 64px);font-size:18px;">TETRIS</label>
+    <label id="scoreText" style="width:85px;height:20px;left:16px;top:12px;line-height: 16px;font-size:16px;">Score: 0</label>
+    <label id="bestText" style="width:85px;height:20px;left:16px;top:32px;font-size:16px;">Best: 0</label>
+    <button id="pauseGameButton" style="width:100px;height:48px;right:8px;top:8px;">PAUSE</button>
+    <button id="playButton" style="width:100px;height:48px;right:8px;top:8px;">PLAY</button>
+
+  </div>
+  <div id="content">
+
+
+    <canvas id="canvas" style="" onclick="rotate()"></canvas>
+
+  </div>
+  <div id="footer" class="flex-container">
+    <div><button id="fast" class="material-icons" style="position:relative;width:48px;height:48px;">arrow_downward</button></div>
+    <div><button id="left" class="material-icons" style="position:relative;width:48px;height:48px;">arrow_back</button></div>
+    <div><button id="rotate" class="material-icons" style="position:relative;width:48px;height:48px;">autorenew</button></div>
+    <div><button id="right" class="material-icons" style="position:relative;width:48px;height:48px;">arrow_forward</button></div>
+    <div><button id="slow" class="material-icons" style="position:relative;width:48px;height:48px;">stop</button></div>
+  </div>
+
+  <script>
+  if('serviceWorker' in navigator) {
+    navigator.serviceWorker
+             .register('worker.js')
+             .then(function() { console.log("Service Worker Registered"); });
+  }
+  let deferredPrompt;
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    console.log("should be installable");
+    // Prevent the mini-infobar from appearing on mobile
+    e.preventDefault();
+    // Stash the event so it can be triggered later.
+    deferredPrompt = e;
+    // Update UI notify the user they can install the PWA
+    //showInstallPromotion();
+  });
+
+  /*
+  buttonInstall.addEventListener('click', (e) => {
+    // Hide the app provided install promotion
+    hideMyInstallPromotion();
+    // Show the install prompt
+    deferredPrompt.prompt();
+    // Wait for the user to respond to the prompt
+    deferredPrompt.userChoice.then((choiceResult) => {
+      if (choiceResult.outcome === 'accepted') {
+        console.log('User accepted the install prompt');
+      } else {
+        console.log('User dismissed the install prompt');
+      }
+    });
+  });*/
+
+  window.addEventListener('appinstalled', (evt) => {
+    // Log install to analytics
+    console.log('INSTALL: Success');
+  });
+  </script>
+</body>
+</html>
+<script>
+var canvasContext;
+var dpr = 1;
+function setPosition(id,x,y,width,height){
+  ////console.log(id);
+}
+function createCanvas(id){
+  dpr = (window.devicePixelRatio || 1) * (canvas.getBoundingClientRect().height / 450);
+  console.log(dpr);
+  // Get the size of the canvas in CSS pixels.
+  var rect = canvas.getBoundingClientRect();
+  // Give the canvas pixel dimensions of their CSS
+  // size * the device pixel ratio.
+  canvas.width = 220 * dpr;
+  canvas.height = 450 * dpr;
+  var ctx = canvas.getContext('2d');
+  // Scale all drawing operations by the dpr, so you
+  // don't have to worry about the difference.
+  ctx.scale(dpr, dpr);
+
+  canvasContext = ctx;
+}
+function clearCanvas(){
+  canvasContext.clearRect(0,0,element("canvas").width,element("canvas").height);
+}
+function setText(id,text){
+  element(id).innerHTML = text;
+}
+function hideElement(id){
+  //console.log(id);
+  element(id).style.visibility = "hidden";
+}
+function showElement(id){
+  //console.log(id);
+  element(id).style.visibility = "visible";
+}
+function setFillColor(color){
+  canvasContext.fillStyle = color;
+}
+function setStrokeColor(color){
+  canvasContext.strokeStyle = color;
+}
+function rect(x,y,width,height){
+  canvasContext.beginPath();
+  canvasContext.rect(x,y,width,height);
+  canvasContext.fillRect(x,y,width,height);
+  canvasContext.stroke();
+}
+function scale(input){
+  return input * dpr;
+}
+function getImageData(x,y,width,height){
+  ////console.log( canvasContext.getImageData(x,y,width,height));
+  return canvasContext.getImageData(scale(x),scale(y),scale(width),scale(height));
+}
+function putImageData(imgData,x,y){
+  canvasContext.putImageData(imgData,scale(x),scale(y));
+}
+function getRed(imgData){
+  return imgData.data[0];
+}
+function getBlue(imgData){
+  return imgData.data[1];
+}
+function getGreen(imgData){
+  return imgData.data[2];
+}
+function timedLoop(time,fct){
+  setInterval(fct, time);
+}
+function onEvent(id,type,fct){
+  element(id).addEventListener(type,fct);
+}
+function element(id){
+  return document.getElementById(id);
+}
+function randomNumber(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+</script>
+<script>
+//This program was ported from code.org
+var currentBlockX = 94;
+var currentBlockY = 19;
+var scoreInt = 0;
+var bestScoreInt = 0;
+var blockData = [0,1,0,0,1,0,0,1,1];
+var shouldSendDown = false;
+var timerShouldRun = false;
+var blockColor = "#FF0000";
+var flashInt = 0;
+var isFinal = false;
+init();
+
+function init(){
+  setPosition("scoreText", 220, 10, 100, 100);
+  createCanvas("canvas");
+  setFillColor("white");
+  hideElement("pauseGameButton");
+  rect(10,10,205,430);
+}
+//Start a new game
+function startGame(){
+  scoreInt = 0;
+  updateScore();
+  clearCanvas();
+  setStrokeColor("black");
+  setFillColor("white");
+  setText("pauseGameButton","PAUSE");
+  showElement("pauseGameButton");
+  element("canvas").getContext('2d').lineWidth = scale(0.5);
+  rect(10,10,205,430);
+  element("canvas").getContext('2d').lineWidth = scale(0.25);
+  createNewBlock();
+}
+//Removes filled lines and increases score accordingly
+function checkForLineFill(){
+  var checkX = 20;
+  var checkY = 425;
+  //230 = max amount of possible checks
+  for (var i = 0; i < 230; i++){
+    if (checkY > 20){
+      var imgData = getImageData(checkX,checkY,1,1);
+      //If there's an empty space, no need to check the rest of the row
+      if (checkIntersects(imgData) == false){
+        checkX = 20;
+        checkY -= 20;
+      }else if (checkX < 200){
+        checkX += 20;
+      }else{ //Finished checking row with no empty spaces
+        shiftDown(checkY);
+        scoreInt += 1;
+        updateScore();
+        checkX = 20;
+        checkY = 425;
+        i = 0;
+      }
+    }else{
+      i = 230; //all rows checked
+    }
+  }
+}
+//Removes filled row and shifts all blocks above down
+function shiftDown(yMax){
+  setFillColor("white");
+  setStrokeColor("white");
+  rect(12,yMax - 8, 200,20);
+  var imgData = getImageData(12,12,200,yMax - 20);
+  putImageData(imgData,12,32);
+}
+function updateScore(){
+  setText("scoreText", "Score: " + scoreInt);
+}
+//Moves the block down every half second
+timedLoop(500, function() {
+  if (timerShouldRun === true){
+    moveDown();
+  }else if (isFinal == true){ //Game over animation
+    if (flashInt > 0 && flashInt % 2 == 1){
+      blockColor = "yellow";
+      drawBlock(blockData,blockColor,0,16);
+      flashInt -= 1;
+    }else if (flashInt > 0){
+      blockColor = "black";
+      drawBlock(blockData,blockColor,0,16);
+      flashInt -= 1;
+    }else{
+      isFinal = false;
+      setText("overlayText","GAME OVER");
+      setText("playButton","RESTART");
+      showElement("overlayText");
+      showElement("playButton");
+      checkForHighScore();
+    }
+  }
+});
+//Only activated when drop is requested
+timedLoop(50, function() {
+  if (shouldSendDown){
+    moveDown();
+  }
+});
+function checkForHighScore(){
+  if (scoreInt > bestScoreInt){
+    bestScoreInt = scoreInt;
+    setText("highScoreText", "Best: " + bestScoreInt);
+  }
+}
+//Draws a block using given parameters
+function drawBlock(config,color,offset,size){
+
+  setStrokeColor(color);
+  setFillColor(color);
+  var xVal = currentBlockX - (40 + offset);
+  var yVal = currentBlockY - offset;
+  var xMove = 20;
+  var yMove = 20;
+  //Adds block elements to the right and down in a 3x3 grid
+  for (var i = 0; i < 9; i++){
+    //Moves x value by 20 until it reaches the end. Then moves the y down 20.
+    if (xVal == currentBlockX + (20 - offset)){
+      xVal = currentBlockX - (20 + offset);
+      yVal += yMove;
+    }else{
+      xVal += xMove;
+    }
+    if (config[i] == 1){
+      rect(xVal,yVal,size,size);
+    }
+  }
+}
+//Moves block down
+function moveDown(){
+  //If there's no collision, move down. Otherwise, make new block
+  if (checkForCollision(blockData, "down") === false){
+    refresh();
+    currentBlockY += 20;
+    drawBlock(blockData,blockColor,0,16);
+  }else{
+    checkForLineFill();
+    shouldSendDown = false;
+    createNewBlock();
+  }
+}
+//Checks for collision
+function checkForCollision(config, direction){
+  var intersects = false;
+  var xVal = currentBlockX - 40;
+  var yVal = currentBlockY;
+  for (var i = 0; i < 9; i++){
+    //Moves x value by 20 until it reaches the end. Then moves the y down 20.
+    if (xVal == currentBlockX + 20){
+      xVal = currentBlockX - 20;
+      yVal += 20;
+    }else{
+      xVal += 20;
+    }
+    //Check for intersection only if there shouldn't be anything left/down/right to the square
+    if (direction == "down" && (config[i] == 1 && config[i + 3] === 0 || config[i] == 1 && i > 5)){
+      intersects = checkIntersects(getImageData(xVal + 10, yVal + 30, 1,1));
+      if (intersects){
+        return true;
+      }
+    }else if (direction == "left" && (config[i] == 1 && i % 3 == 0 || config[i] == 1 && config[i - 1] === 0)){
+      intersects = checkIntersects(getImageData(xVal - 10, yVal + 5, 1,1));
+      if (intersects){
+        return true;
+      }
+    }else if (direction == "right" && (config[i] == 1 && i % 3 == 2 || config[i] == 1 && config[i + 1] === 0)){
+      intersects = checkIntersects(getImageData(xVal + 20, yVal + 5, 1,1));
+      setFillColor("black");
+      if (intersects){
+        return true;
+      }
+    }
+  }
+  return false;
+}
+function checkForOverlap(config){
+  var overlaps = false;
+  var xVal = currentBlockX - 40;
+  var yVal = currentBlockY;
+  for (var i = 0; i < 9; i++){
+    //Moves x value by 20 until it reaches the end. Then moves the y down 20.
+    if (xVal == currentBlockX + 20){
+      xVal = currentBlockX - 20;
+      yVal += 20;
+    }else{
+      xVal += 20;
+    }
+    if (config[i] == 1){
+      var imgData = getImageData(xVal + 10, yVal + 10,1,1);
+      if (checkIntersects(imgData) == true){
+        return true;
+      }
+    }
+  }
+  return false;
+}
+function checkIntersects(imgData){
+  //If the pixel isn't white when it should be, then there's something there (collision)
+
+  if (getRed(imgData) != 255 || getGreen(imgData) != 255 || getBlue(imgData) != 255){
+    //console.log("data");
+    //console.log(getRed(imgData) + " , " + getGreen(imgData) + " , " + getBlue(imgData));
+    return true;
+  }
+
+  return false;
+}
+//Creates new block at the top
+function createNewBlock(){
+  timerShouldRun = false;
+  currentBlockX = 94;
+  currentBlockY = 19;
+  loadBlock();
+}
+
+function loadBlock(){
+  var block = JSON.parse('[ { "val1": 1, "val2": 1, "val3": 1, "val4": 0, "val5": 1, "val6": 0, "val7": 0, "val8": 0, "val9": 0, "color": "#FF0000", "id": 1 }, { "id": 2, "val1": 1, "val2": 1, "val3": 1, "val4": 1, "val5": 0, "val6": 0, "val7": 0, "val8": 0, "val9": 0, "color": "#00AA00" }, { "id": 3, "val1": 1, "val2": 1, "val3": 0, "val4": 0, "val5": 1, "val6": 1, "val7": 0, "val8": 0, "val9": 0, "color": "#FF00FF" }, { "id": 5, "val2": 1, "val1": 0, "val3": 1, "val4": 1, "val5": 1, "val6": 0, "val7": 0, "val8": 0, "val9": 0, "color": "#0000FF" }, { "id": 6, "val2": 1, "val1": 1, "val3": 1, "val4": 0, "val5": 0, "val6": 0, "val7": 0, "val8": 0, "val9": 0, "color": "#AAAAAA" }, { "id": 7, "val1": 1, "val2": 1, "val3": 1, "val4": 0, "val5": 0, "val6": 1, "val7": 0, "val8": 0, "val9": 0, "color": "#F79400" }, { "id": 9, "val1": 1, "val2": 1, "val3": 0, "val4": 1, "val5": 1, "val6": 0, "val7": 0, "val8": 0, "val9": 0, "color": "#C1580D" } ]');
+  var rand = randomNumber(0,block.length - 1);
+  blockData = [block[rand].val1,block[rand].val2,block[rand].val3,block[rand].val4,block[rand].val5,block[rand].val6,block[rand].val7,block[rand].val8,block[rand].val9];
+  isFinal = checkForOverlap(blockData);
+
+  if (isFinal == false){
+    blockColor = block[rand].color;
+
+    drawBlock(blockData,blockColor,0,16);
+    timerShouldRun = true;
+  }else{
+    blockColor = "black";
+    drawBlock(blockData,blockColor,0,16);
+
+    flashInt = 5;
+    hideElement("pauseGameButton");
+  }
+}
+
+//Clears active block from canvas
+function refresh(){
+  drawBlock(blockData,"#FFFFFF",2,21);
+}
+//Activates when a key is pressed
+onEvent("game", "keydown", function(event) {
+  if (timerShouldRun){
+    if (event.keyCode == 37 && currentBlockX > 0){
+      refresh();
+      if (checkForCollision(blockData,"left") == false){
+        currentBlockX -= 20;
+      }
+      drawBlock(blockData,blockColor,0,16);
+    }else if (event.keyCode == 38){
+      refresh();
+      var newBlockData = [blockData[6],blockData[3],blockData[0],blockData[7],blockData[4],blockData[1],blockData[8],blockData[5],blockData[2]];
+      if (checkForOverlap(newBlockData) == false){
+        blockData = newBlockData;
+      }
+      drawBlock(blockData,blockColor,0,16);
+    }else if (event.keyCode == 39){
+      refresh();
+      if (checkForCollision(blockData,"right") == false){
+        currentBlockX += 20;
+      }
+      drawBlock(blockData,blockColor,0,16);
+    }else if (event.keyCode == 40){
+      shouldSendDown = true;
+    }else if (event.keyCode == 32){
+      shouldSendDown = false;
+    }
+  }
+});
+onEvent("left", "click", function(event) {
+  refresh();
+  if (checkForCollision(blockData,"left") == false){
+    currentBlockX -= 20;
+  }
+  drawBlock(blockData,blockColor,0,16);
+});
+onEvent("right", "click", function(event) {
+  refresh();
+  if (checkForCollision(blockData,"right") == false){
+    currentBlockX += 20;
+  }
+  drawBlock(blockData,blockColor,0,16);
+});
+onEvent("rotate", "click", function(event) {
+  rotate();
+});
+onEvent("fast", "click", function(event) {
+  shouldSendDown = true;
+});
+onEvent("slow", "click", function(event) {
+  shouldSendDown = false;
+});
+onEvent("playButton", "click", function(event) {
+  hideElement("overlayText");
+  hideElement("playButton");
+  startGame();
+});
+
+function rotate(){
+  refresh();
+  var newBlockData = [blockData[6],blockData[3],blockData[0],blockData[7],blockData[4],blockData[1],blockData[8],blockData[5],blockData[2]];
+  if (checkForOverlap(newBlockData) == false){
+    blockData = newBlockData;
+  }
+  drawBlock(blockData,blockColor,0,16);
+}
+
+onEvent("pauseGameButton", "click", function(event) {
+  if (timerShouldRun == true){
+    timerShouldRun = false;
+    setText("pauseGameButton", "RESUME");
+    setText("overlayText","PAUSED");
+    setText("playButton","RESTART");
+    showElement("overlayText");
+    showElement("playButton");
+  }else{
+    timerShouldRun = true;
+    setText("pauseGameButton","PAUSE");
+    hideElement("overlayText");
+    hideElement("playButton");
+  }
+});
+
+</script>
