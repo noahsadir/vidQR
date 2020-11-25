@@ -24,7 +24,9 @@ The decoding program first searches for a Code128 barcode which contains the num
 
 An array is created with pre-allocated indices for each packet data and another array is created to store the packet IDs for reference.
 
-For each code detected by the scanner. The first 4 bytes of the code are casted to a 32 bit integer and compared against the packet ID array. If no matches are found (packet hasn't been stored yet), the remaining bytes of code are stored as a Base64 string in the appropriate index.
+For each code detected by the scanner:
+- The first 4 bytes of the code are interpreted as a 32-bit integer and compared against the packet ID array.
+- If no matches are found (packet hasn't been stored yet), the remaining bytes of code are stored as a Base64 string in the appropriate index.
 
 The program keeps scanning until each packet is stored. All the strings are combined (in order) into a single string and decoded back into binary, which is then stored as a file with the extension specified in the metadata.
 
