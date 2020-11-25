@@ -4,13 +4,13 @@
 
     python3 encode.py -p [PATH] OPTIONAL_ARGS
 
-### Required Arguments
+#### Required Arguments
 
 Short | Long | Description | Default
 ----- | ---- | ----------- | --------
 -p | --path | Input path | None
 
-### Optional Arguments
+#### Optional Arguments
 
 Short | Long | Description | Default
 ----- | ---- | ----------- | --------
@@ -34,14 +34,14 @@ Full:
 
     python3 decode.py -p [PATH] OPTIONAL_ARGS
 
-### Required Arguments
+#### Required Arguments
 
 Short | Long | Description | Default
 ----- | ---- | ----------- | --------
 -p | --path | Input path | None
 
 
-### Optional Arguments
+#### Optional Arguments
 
 Short | Long | Description | Default
 ----- | ---- | ----------- | --------
