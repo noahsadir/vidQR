@@ -1,8 +1,6 @@
-# vidQR Python Scripts
+# Usage
 
-## Usage
-
-### Encode
+## Encode
 
     python3 encode.py -p [PATH] OPTIONAL_ARGS
 
@@ -15,7 +13,7 @@ Short | Long | Description | Default
 -f | --fps | Framerate of GIF | 5
 -fl | --flash | GIF flashes between loops | false
 
-#### Examples:
+### Examples:
 
 Basic:
 
@@ -25,7 +23,7 @@ Full:
 
     python3 encode.py -p sunset.png -o codes/sunset.gif -v 5 -e 1 -f 6 -fl true
 
-### Decode
+## Decode
 
     python3 decode.py -p [PATH] OPTIONAL_ARGS
 
@@ -36,7 +34,7 @@ Short | Long | Description | Default
 -n | --name | Output file name (w/o extension) | output
 -v | --verbose | Display debug messages | false
 
-#### Examples:
+### Examples:
 
 Basic:
 
