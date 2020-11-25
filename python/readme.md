@@ -6,9 +6,13 @@
 
     python3 encode.py -p [PATH] OPTIONAL_ARGS
 
-Examples:
+#### Examples:
+
+Basic:
 
     python3 encode.py -p sunset.png
+
+Full:
 
     python3 encode.py -p sunset.png -o codes/sunset.gif -v 5 -e 1 -f 6 -fl true
 
@@ -25,9 +29,13 @@ Short | Long | Description | Default
 
     python3 encode.py -p [PATH] OPTIONAL_ARGS
 
-Examples:
+#### Examples:
+
+Basic:
 
     python3 decode.py -p sunset.mp4
+
+Full:
 
     python3 decode.py -p sunset.mp4 -o ~/Documents -n sunset -v true
 
