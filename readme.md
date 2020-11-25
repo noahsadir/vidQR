@@ -1,7 +1,5 @@
 # vidQR - Animated series of QR Codes
 
----
-
 ## Usage
 
 See the individual folders for usage data specific to that program.
@@ -9,7 +7,6 @@ See the individual folders for usage data specific to that program.
 In general, put a file into an encoder to recieve a vidQR code and scan that code with a decoder to retrieve the file back.
 
 ## Technical Details
----
 
 ### Encoding
 
