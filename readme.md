@@ -34,4 +34,4 @@ The program keeps scanning until each packet is stored. All the strings are comb
 
 ### What are practical uses for this?
 
-I have no idea. This is something I made out of sheer boredom curiosity.
+I have no idea. This is something I made out of sheer boredom and curiosity.
