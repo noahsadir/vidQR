@@ -9,49 +9,53 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--View Controller-->
+        <!--vidQR Scanner-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="vidqr" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="vidQR" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="390" height="844"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Searching for code" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xX6-Hb-gXF">
+                                <rect key="frame" x="18" y="98" width="189" height="35"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="125" id="EuI-XI-0by"/>
+                                    <constraint firstAttribute="width" constant="189" id="tJ1-YN-sHW"/>
+                                    <constraint firstAttribute="height" constant="35" id="xyJ-sF-dJF"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="20"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="2k9-eE-R9r">
-                                <rect key="frame" x="0.0" y="266" width="390" height="544"/>
+                                <rect key="frame" x="18" y="141" width="354" height="653"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </view>
-                            <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="nJ7-j3-5ad">
-                                <rect key="frame" x="33" y="234" width="206" height="4"/>
-                            </progressView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Searching for vidQR code" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xX6-Hb-gXF">
-                                <rect key="frame" x="30" y="98" width="209" height="21"/>
-                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0 seconds" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QuV-2J-Q7L">
-                                <rect key="frame" x="32" y="176" width="209" height="21"/>
-                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0 of 0" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="89b-db-Oea">
-                                <rect key="frame" x="33" y="205" width="206" height="21"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="s0S-RD-O2e">
-                                <rect key="frame" x="247" y="110" width="128" height="128"/>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VIr-W5-u6Y">
+                                <rect key="frame" x="303" y="159" width="50" height="50"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="0%" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DxW-F8-cXS">
+                                        <rect key="frame" x="0.0" y="11" width="50" height="29"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="14"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="128" id="B57-87-2s7"/>
-                                    <constraint firstAttribute="height" constant="128" id="b5i-Fd-gS4"/>
+                                    <constraint firstAttribute="width" constant="50" id="I48-3c-NdJ"/>
+                                    <constraint firstAttribute="height" constant="50" id="qnX-8l-agf"/>
                                 </constraints>
-                            </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Missed 0 packets" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0VP-vd-TBM">
-                                <rect key="frame" x="30" y="127" width="209" height="21"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            </view>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0 of 0" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="89b-db-Oea">
+                                <rect key="frame" x="215" y="104" width="157" height="29"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="29" id="EHs-xM-P7l"/>
+                                    <constraint firstAttribute="width" constant="157" id="h2b-A4-6fQ"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
@@ -59,49 +63,30 @@
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="89b-db-Oea" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="33" id="3qd-PX-9Tf"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="nJ7-j3-5ad" secondAttribute="trailing" constant="151" id="6T2-qa-QKO"/>
-                            <constraint firstItem="s0S-RD-O2e" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="22" id="BnT-KM-pZw"/>
-                            <constraint firstItem="QuV-2J-Q7L" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="32" id="EAi-48-EuX"/>
-                            <constraint firstItem="xX6-Hb-gXF" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="30" id="GLR-3Y-nWB"/>
-                            <constraint firstItem="QuV-2J-Q7L" firstAttribute="width" secondItem="0VP-vd-TBM" secondAttribute="width" id="Ub2-Zt-Px6"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="89b-db-Oea" secondAttribute="trailing" constant="151" id="V79-Gf-vLW"/>
-                            <constraint firstItem="xX6-Hb-gXF" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="10" id="XDf-d9-cwm"/>
-                            <constraint firstItem="nJ7-j3-5ad" firstAttribute="top" secondItem="89b-db-Oea" secondAttribute="bottom" constant="8" symbolic="YES" id="ZP1-lV-Q26"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="2k9-eE-R9r" secondAttribute="trailing" id="bKs-bk-zh5"/>
-                            <constraint firstItem="2k9-eE-R9r" firstAttribute="top" secondItem="nJ7-j3-5ad" secondAttribute="bottom" constant="28" id="bUs-50-3TW"/>
-                            <constraint firstItem="0VP-vd-TBM" firstAttribute="top" secondItem="xX6-Hb-gXF" secondAttribute="bottom" constant="8" symbolic="YES" id="gwT-GG-5Kk"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="s0S-RD-O2e" secondAttribute="trailing" constant="15" id="hmZ-Su-aL7"/>
-                            <constraint firstItem="nJ7-j3-5ad" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="33" id="oJZ-jG-IyU"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="xX6-Hb-gXF" secondAttribute="trailing" constant="151" id="oUu-G8-ug2"/>
-                            <constraint firstItem="0VP-vd-TBM" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="30" id="oV9-uM-39a"/>
-                            <constraint firstItem="0VP-vd-TBM" firstAttribute="width" secondItem="xX6-Hb-gXF" secondAttribute="width" id="obe-bH-3tZ"/>
-                            <constraint firstItem="2k9-eE-R9r" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="178" id="oyr-cN-1Hy"/>
-                            <constraint firstItem="89b-db-Oea" firstAttribute="top" secondItem="QuV-2J-Q7L" secondAttribute="bottom" constant="8" symbolic="YES" id="qUk-vu-ltR"/>
-                            <constraint firstItem="2k9-eE-R9r" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="uX6-OS-NCf"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="2k9-eE-R9r" secondAttribute="bottom" id="vHk-ox-W9c"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="VIr-W5-u6Y" secondAttribute="trailing" constant="37" id="DqT-0S-iHq"/>
+                            <constraint firstItem="xX6-Hb-gXF" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="18" id="IIs-cb-euS"/>
+                            <constraint firstItem="VIr-W5-u6Y" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="71" id="Lf1-RL-Buc"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="2k9-eE-R9r" secondAttribute="bottom" constant="16" id="OXJ-Nt-6F2"/>
+                            <constraint firstItem="89b-db-Oea" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="16" id="Oaq-IL-SM2"/>
+                            <constraint firstItem="2k9-eE-R9r" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="53" id="WhC-ff-ggm"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="89b-db-Oea" secondAttribute="trailing" constant="18" id="a87-v6-U5w"/>
+                            <constraint firstItem="2k9-eE-R9r" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="18" id="crK-GW-Jxy"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="2k9-eE-R9r" secondAttribute="trailing" constant="18" id="jnQ-G6-8bL"/>
+                            <constraint firstItem="xX6-Hb-gXF" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="10" id="rVo-X5-Y7c"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" id="IGZ-FQ-XyH">
-                        <barButtonItem key="rightBarButtonItem" systemItem="action" id="Yfa-nw-rZ5">
-                            <connections>
-                                <action selector="shareButtonClicked:" destination="BYZ-38-t0r" id="Z9T-HI-OrK"/>
-                            </connections>
-                        </barButtonItem>
-                    </navigationItem>
+                    <navigationItem key="navigationItem" title="vidQR Scanner" id="IGZ-FQ-XyH"/>
                     <connections>
                         <outlet property="cameraView" destination="2k9-eE-R9r" id="z89-dw-tUi"/>
-                        <outlet property="imageView" destination="s0S-RD-O2e" id="tHh-iK-ACv"/>
-                        <outlet property="missedPacketsLabel" destination="0VP-vd-TBM" id="Yjy-15-6Rl"/>
-                        <outlet property="progressBar" destination="nJ7-j3-5ad" id="1AV-Sj-JIp"/>
+                        <outlet property="percentageLabel" destination="DxW-F8-cXS" id="Ccd-js-wUy"/>
                         <outlet property="progressLabel" destination="89b-db-Oea" id="v0j-8G-poU"/>
+                        <outlet property="progressRingView" destination="VIr-W5-u6Y" id="Zv4-aP-0Xo"/>
                         <outlet property="statusLabel" destination="xX6-Hb-gXF" id="Gcr-Yl-g5P"/>
-                        <outlet property="timeLeftLabel" destination="QuV-2J-Q7L" id="zbQ-d8-T1a"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="704.34782608695662" y="70.982142857142847"/>
+            <point key="canvasLocation" x="703.07692307692309" y="70.379146919431278"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="RFg-CV-H2V">
