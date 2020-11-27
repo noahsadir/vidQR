@@ -166,7 +166,7 @@ def includeMetadataBarcode(qrCode, barCode, interpolation=cv2.INTER_CUBIC):
     qrWidth = qrCode.shape[1]
 
     #bcHeight * (qrWidth / bcHeight) = height scaled proportionally to new width
-    bcHeight = int(barCode.shape[1] * (barCode.shape[0] / qrWidth) / 2)
+    bcHeight = int(qrWidth / 10)
 
     #Resize barcode to ensure its width matches the qr code height
     barCode = cv2.resize(barCode, (qrWidth,bcHeight), interpolation=cv2.INTER_CUBIC)
