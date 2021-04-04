@@ -41,6 +41,7 @@ For each code detected by the scanner:
 The program keeps scanning until each packet is stored. All the strings are combined (in order) into a single string and decoded back into binary, which is then stored as a file with the extension specified in the metadata.
 
 ## FAQ
+Actually, not really. Nobody's asked these questions, but I'll answer them anyway.
 
 ### What are practical uses for this?
 
@@ -50,6 +51,9 @@ I have no idea. This is something I made out of sheer boredom and curiosity.
 
 Since the maximum storage capacity of a QR code (Version 40) is just over 3 KB and the packets are stored as a 32-bit integer, you could theoretically encode a 12TB file in 4,294,967,295 packets. Please don't do this.
 
-### Why is the packet ID stored as a 32-bit int? Will you really need that many packets?
+### What are the recommended settings?
 
-Probably not. I might change it to a 16-bit or 24-bit value.
+The recommended settings are included in the defaults. I have found this to be the best one-size-fits-all configuration which maximizes speed, accuracy, and practicality. As of 03/10/2021, that is:
+- Version 20 QR code (-v 20)
+- 5 FPS (-f 5)
+- Redundancy interval of 4 (-r 4) with 2 redundant frames (-rf 2)
