@@ -3,7 +3,6 @@ import argparse
 import qrcode
 import cv2
 import os
-import imageio
 from PIL import Image
 from barcode import Code128
 from barcode.writer import ImageWriter
@@ -14,14 +13,18 @@ import binascii
 import math
 import time
 import sys
+import numpy
+import random
 
 parser = argparse.ArgumentParser(description='Retrieve options dates for a given stock')
 parser.add_argument('-p', '--path',default="",help="**REQUIRED** Input Path")
-parser.add_argument('-o', '--output',default="vidqr.gif",help="Output Path [optional; default {WORKING_DIR}/vidqr.gif]")
-parser.add_argument('-v', '--version',default="10",help="Version btwn 1 and 40 [optional, default 10]")
+parser.add_argument('-o', '--output',default="vidqr",help="Output Path [optional; default {WORKING_DIR}/vidqr.gif]")
+parser.add_argument('-v', '--version',default="20",help="Version btwn 1 and 40 [optional, default 10]")
 parser.add_argument('-e', '--errcorrect',default="0",help="Error correction level btwn 0 (low) and 3 (high) [optional; default 0]")
 parser.add_argument('-f', '--fps',default="5",help="Framerate [optional; defualt 5]")
 parser.add_argument('-fl', '--flash',default="false",help="Animation flashes at every loop [optional; default false]")
+parser.add_argument('-r', '--redundancy',default="4",help="Animation flashes at every loop [optional; default false]")
+parser.add_argument('-rf', '--redundantframes',default="2",help="number of same redundant frames (pauses) per interval")
 args = parser.parse_args()
 
 #Number of bytes that can be stored for each QR code version at each err correction level
@@ -67,6 +70,7 @@ capacity = [[17,14,11,7],
 [2953,2331,1663,1273]]
 
 startTime = time.time()
+
 permanentPrint = "" #Text intended to remain after clearing console
 
 #Binary data of input file stored as a Base64 string
@@ -77,53 +81,22 @@ filetype = "txt"
 #METADATA - Stored in Code128 Barcode
 extension = os.path.splitext(args.path)[1].replace(".","") #Store extension of input file for decoding
 versionOfCode = int(args.version)
-errorCorrection = int(args.errcorrect)
 originalSize = os.path.getsize(args.path)
+redundancyInterval = int(args.redundancy);
 framerate = int(args.fps)
-if errorCorrection < 0:
-    errorCorrection = 0
-elif errorCorrection > 3:
-    errorCorrection = 3
-
-#CONFIGURATION - Used to encode data
-flashes = False
-version = int(args.fps)
-if args.flash == "true":
-    flashes = True
-#Ensure version is between 1 and 40
-if version < 1:
-    version = 1
-elif version > 40:
-    version = 40
+errorCorrection = int(args.errcorrect)
 errCorrectConstant = qrcode.constants.ERROR_CORRECT_L
+redundantFrames = int(args.redundantframes);
+flashes = bool(args.flash)
+
 if errorCorrection == 1:
-    qrcode.constants.ERROR_CORRECT_M
+    errCorrectConstant = qrcode.constants.ERROR_CORRECT_M
 elif errorCorrection == 2:
-    qrcode.constants.ERROR_CORRECT_Q
-elif errorCorrection == 3:
-    qrcode.constants.ERROR_CORRECT_H
+    errCorrectConstant = qrcode.constants.ERROR_CORRECT_Q
+elif errorCorrection >= 3:
+    errCorrectConstant = qrcode.constants.ERROR_CORRECT_H
 
-#Generate Code128 barcode with string data
-def generateCode128(dataString):
-    code128Barcode = Code128(dataString, writer=ImageWriter())
-    #TODO: Directly save barcode to variable instead of writing then reading
-    code128Barcode.save("tmp/barcode", options={"write_text": False})
-    img = cv2.imread("tmp/barcode.png")
-    os.remove("tmp/barcode.png")
-    return img
-
-#Generate QR code with desired data
-def generateQR(data):
-    global versionOfCode, errCorrectConstant
-    qr = qrcode.QRCode(version=versionOfCode,error_correction=errCorrectConstant)
-    qr.add_data(data)
-    qr.make()
-    pilQR = qr.make_image()
-    pilQR.save("tmp/qr.png")
-    cvQR = cv2.imread("tmp/qr.png")
-    os.remove("tmp/qr.png")
-    return cvQR
-
+#Create ASCII percentage bar
 def percentageBar(value,max):
     outputString = "["
     percent = round((value / max) * 100)
@@ -144,6 +117,40 @@ def percentageBar(value,max):
     outputString = outputString + "] "
     return outputString
 
+#Clear display but leave permanent text if desired
+def clearConsole(includePermanent=True):
+    global permanentPrint
+    print("\033c")
+    if includePermanent == True:
+        print(permanentPrint)
+        print("--------------------")
+
+#Generate Code128 barcode with string data
+def generateCode128(dataString):
+    code128Barcode = Code128(dataString, writer=ImageWriter())
+    #TODO: Directly save barcode to variable instead of writing then reading
+    pilImage = code128Barcode.render()
+    return cv2.cvtColor(numpy.array(pilImage).astype(np.uint8), cv2.COLOR_RGB2BGR)
+
+def convertPilToCV(pilImg):
+    pilImg.save("tmp/pil.png")
+    cvImg = cv2.imread("tmp/pil.png")
+    os.remove("tmp/pil.png")
+    return cvImg
+
+#Generate QR code with desired data
+def generateQR(data):
+    global versionOfCode, errCorrectConstant, permanentPrint
+
+    #Generate QR as a pil image
+    qr = qrcode.QRCode(version=versionOfCode,error_correction=errCorrectConstant)
+    qr.add_data(data)
+    pilQR = qr.make_image()
+
+    #Return a CV image
+    return convertPilToCV(pilQR)
+
+#Encode Base64 fragments into array of QR code images
 def generateCodesFromArray(dataArray):
     global numberOfCodes
     newImageArray = []
@@ -161,6 +168,7 @@ def generateCodesFromArray(dataArray):
         newImageArray.append(img)
     return newImageArray
 
+#Attach constant barcode w/ important metadata below QR codes
 def includeMetadataBarcode(qrCode, barCode, interpolation=cv2.INTER_CUBIC):
     qrHeight = qrCode.shape[0]
     qrWidth = qrCode.shape[1]
@@ -171,33 +179,16 @@ def includeMetadataBarcode(qrCode, barCode, interpolation=cv2.INTER_CUBIC):
     #Resize barcode to ensure its width matches the qr code height
     barCode = cv2.resize(barCode, (qrWidth,bcHeight), interpolation=cv2.INTER_CUBIC)
 
-    #qrCode = cv2.resize(qrCode, (500,500), interpolation=cv2.INTER_CUBIC)
-    #barCode = cv2.resize(barCode, (500,100), interpolation=cv2.INTER_CUBIC)
-
     return cv2.vconcat([qrCode,barCode])
 
+#Used primarily as an (optional) indicator of the end of the series when looping
 def generateBlankImage(h, w):
     a = np.full((h, w, 3), 255, dtype=np.uint8)
     image = Image.fromarray(a, "RGB")
     return image
 
-def imageIOfromCV2(cv2Image):
-    cv2.imwrite("tmp/cv2.png",cv2Image)
-    ioImage = imageio.imread("tmp/cv2.png")
-    os.remove("tmp/cv2.png")
-    return ioImage
-
-
-#Clear display but leave permanent text if desired
-def clearConsole(includePermanent=True):
-    global permanentPrint
-    print("\033c")
-    if includePermanent == True:
-        print(permanentPrint)
-        print("--------------------")
-
 def encode(inputPath,outputPath):
-    global flashes, versionOfCode, errorCorrection, framerate, extension, originalSize, permanentPrint
+    global flashes, versionOfCode, errorCorrection, framerate, extension, originalSize, permanentPrint, redundancyInterval, redundantFrames
     bin_data = open(inputPath, 'rb').read() #read file as binary
     paragraph = binascii.b2a_base64(bin_data) #convert binary to Base64 string
 
@@ -229,35 +220,38 @@ def encode(inputPath,outputPath):
     #Final string stored in barcode
     metadata = str(framerate) + ":" + str(len(splitValues)) + ":" + extension + ":" + str(originalSize)
     metadataBarcode = generateCode128(metadata)
+    if len(images) > 0:
+        redundancyCounter = 0
+        height, width, layers = includeMetadataBarcode(images[0],metadataBarcode).shape
+        size = (width, height)
+        out = cv2.VideoWriter(outputPath + '.mp4',cv2.VideoWriter_fourcc(*'h264'), framerate, size)
 
-    #Add metadata barcode under each QR code and convert to imageIO (required format for making gif)
-    gifImages = []
-    for imageIndex in range(0,len(images)):
-        clearConsole()
-        print("processing images...")
-        print(percentageBar(imageIndex + 1,len(images)))
-        print(str(imageIndex + 1) + " of " + str(len(images)))
-        if imageIndex == len(images) - 1:
-            permanentPrint = permanentPrint + "\nprocessing images...done"
-        gifImages.append(imageIOfromCV2(includeMetadataBarcode(images[imageIndex],metadataBarcode)))
+        #Encode image array into video, including redundant codes at tbe desired intervals
+        for imageIndex in range(0,len(images) - 1):
+            #Write next image to video
+            clearConsole()
+            print("generating video...")
+            print(percentageBar(imageIndex, len(images)))
+            out.write(includeMetadataBarcode(images[imageIndex],metadataBarcode))
+            #Include random redundant code at the end
+            if (imageIndex % redundancyInterval == 0):
+                redundancyCounter += 1
+                if redundancyCounter >= len(images):
+                    redundancyCounter = 0
+                #Multiple redundant frames essentially mimic a pause which increases likelihood
+                #of decoder picking it up.
+                randomIndex = random.randint(0, len(images) - 2)
+                for frameIndex in range(0, redundantFrames):
+                    out.write(includeMetadataBarcode(images[randomIndex],metadataBarcode))
 
-    #Show calculation of roughly estimated time (based on my own tests) to generate GIF
+        out.release()
+
+    permanentPrint = permanentPrint + "\ngenerating video...done"
+
     clearConsole()
-    print("stitching vidQR code...")
-    estimatedSeconds = round(len(gifImages) / 45)
-    if estimatedSeconds > 1:
-        print("This should take about " + str(estimatedSeconds) + " seconds")
-    else:
-        print("This should take just a second")
-
-    #Create gif from array of images
-    imageio.mimsave(outputPath, gifImages, fps=framerate)
-
-    permanentPrint = permanentPrint + "\nstitching vidQR code...done"
-
-    clearConsole()
-    print("Saved vidQR code to " + os.getcwd() + "/" + outputPath)
+    print("Saved vidQR code to " + os.getcwd() + "/" + outputPath + ".mp4")
+    print("Time elapsed: " + str(math.ceil((time.time() - startTime) * 1000) / 1000) + " seconds");
+    print("Encode speed: " + str(math.ceil((originalSize / (time.time() - startTime)) * 100) / 100000) + " KB/s");
     print("--------------------")
-
 
 encode(args.path,args.output)
