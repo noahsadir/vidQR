@@ -23,9 +23,11 @@ parser.add_argument('-v', '--version',default="20",help="Version btwn 1 and 40 [
 parser.add_argument('-e', '--errcorrect',default="0",help="Error correction level btwn 0 (low) and 3 (high) [optional; default 0]")
 parser.add_argument('-f', '--fps',default="5",help="Framerate [optional; defualt 5]")
 parser.add_argument('-fl', '--flash',default="false",help="Animation flashes at every loop [optional; default false]")
-parser.add_argument('-r', '--redundancy',default="4",help="Animation flashes at every loop [optional; default false]")
-parser.add_argument('-rf', '--redundantframes',default="2",help="number of same redundant frames (pauses) per interval")
+parser.add_argument('-r', '--redundancy',default="0",help="Animation flashes at every loop [optional; default false]")
+parser.add_argument('-rf', '--redundantframes',default="0",help="number of same redundant frames (pauses) per interval")
 args = parser.parse_args()
+
+version = 2
 
 #Number of bytes that can be stored for each QR code version at each err correction level
 capacity = [[17,14,11,7],
@@ -218,7 +220,7 @@ def encode(inputPath,outputPath):
         images.append(generateBlankImage(images[0].shape[0],images[0].shape[1]))
 
     #Final string stored in barcode
-    metadata = str(framerate) + ":" + str(len(splitValues)) + ":" + extension + ":" + str(originalSize)
+    metadata = str(version) + ":" + str(len(splitValues)) + ":" + extension + ":" + str(originalSize)
     metadataBarcode = generateCode128(metadata)
     if len(images) > 0:
         redundancyCounter = 0
@@ -234,15 +236,15 @@ def encode(inputPath,outputPath):
             print(percentageBar(imageIndex, len(images)))
             out.write(includeMetadataBarcode(images[imageIndex],metadataBarcode))
             #Include random redundant code at the end
-            if (imageIndex % redundancyInterval == 0):
-                redundancyCounter += 1
-                if redundancyCounter >= len(images):
-                    redundancyCounter = 0
+            #if (imageIndex % redundancyInterval == 0):
+                #redundancyCounter += 1
+                #if redundancyCounter >= len(images):
+                    #redundancyCounter = 0
                 #Multiple redundant frames essentially mimic a pause which increases likelihood
                 #of decoder picking it up.
-                randomIndex = random.randint(0, len(images) - 2)
-                for frameIndex in range(0, redundantFrames):
-                    out.write(includeMetadataBarcode(images[randomIndex],metadataBarcode))
+                #randomIndex = random.randint(0, len(images) - 2)
+                #for frameIndex in range(0, redundantFrames):
+                    #out.write(includeMetadataBarcode(images[randomIndex],metadataBarcode))
 
         out.release()
 
