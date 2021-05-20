@@ -21,7 +21,7 @@ The binary of an input file is encoded as a Base64 string. That string is then s
   - A packet of type 0 represents file data, while a packet of type 1 represents metadata stored as JSON
     ```
     ENCODED:
-    e25hbWU6InN1bnNldCJleHQ6ImpwZyIsc2l6ZToxMjUzOH0=
+    e25hbWU6InN1bnNldCIsZXh0OiJqcGciLHNpemU6MTI1Mzh9
 
     DECODED:
     {
@@ -63,6 +63,8 @@ None, probably.
   - The packet ID is stored as a 24-bit unsigned int, allowing for up to 16,777,216 packets. With 2200 bytes per code, this would allow for approximately 37 GB of data.
 
 While Version 3 only takes advantage of packet types 0 (file data) and 1 (metadata), there can theoretically be up to 256 distinct packet "types". A future version could utilize this to split the packets into 255 groups of 37 GB each, or about 9 TB.
+
+#### Anything near this size is extremely impractical. It's best to keep it under 50 KB, and certainly under 200 KB.
 
 ### Recommended Settings
 
