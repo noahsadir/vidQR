@@ -1,34 +1,29 @@
 # vidQR - Animated series of QR Codes
 
-## Usage
+QR codes are great for transferring very small amounts of data (such as a URL or identifier) with an ordinary camera.
 
-See the individual folders for instructions specific to that program.
+But what if you wanted to transfer more data, perhaps a small file, though a similar method? Even the biggest QR code can only store about 3 KB of data, and even that results in a very large and unwieldy QR code.
 
-In general, put a file into an encoder to receive a vidQR code and scan that code with a decoder to retrieve the file back.
+This "problem" can be solved by breaking up a file into smaller pieces and turning each piece into a QR code, forming a series of codes that can be scanned and decoded.
 
-## Purpose
+### Encoding (see 'python' folder for more info)
 
-A single traditional QR code is immensely useful, but doesn't store that much data. This program attempts to address that issue (and introduces a whole host of new ones while doing so).
+The binary of an input file is encoded as a Base64 string. That string is then split into substrings which can fit in a QR code.
 
-This is accomplished by breaking up a file into smaller pieces and turning each piece into a QR code, forming an animated series of codes that can be scanned and decoded.
+#### VERSION 2
+  - The first 4 bytes stored in each QR code is a header containing the ID of the packet
+  - The remaining bytes contain the actual binary data
 
-Where as a QR code can store up to 3 kilobytes (and only a couple hundred before it becomes huge and unwieldy), vidQR can easily transmit up to a hundred KB of data and theoretically way, way more.
+#### VERSION 3
+  - The first 3 bytes stored in each QR code is 24-bit unsigned int containing the ID of the packet
+  - The fourth byte is an 8-bit unsigned int representing the type of data stored in the packet (file data, metadata, etc.)
+  - The remaining bytes contain the actual binary data
 
-In essence, you can think of vidQR as a 3D barcode, with time being the third dimension.
-
-## Technical Details
-
-### Encoding
-
-The input file is interpreted as a binary file and encoded to a Base64 string. That string is then split to fit into each QR code, which essentially act as packets.
-
-The first 4 bytes stored in each QR code is a header containing ID of the packet (individual code) and the rest contains the actual file data.
-
-After each QR code is generated, they are stitched together into a GIF which can then be scanned by a decoder.
+After each QR code is generated, they are stitched together into a video which can then be scanned by a decoder.
 
 Additionally, a static Code128 barcode is always present under each QR code which stores metadata and triggers the decoder to start scanning the QR codes.
 
-### Decoding
+### Decoding (see 'react' or 'ios-app' folder for more info)
 
 The decoding program first searches for a Code128 barcode which contains the number of packets, file extension, file size, and frame rate of the GIF. Once the code is found and the metadata is stored, the program begins to scan and store the packets.
 
@@ -40,20 +35,24 @@ For each code detected by the scanner:
 
 The program keeps scanning until each packet is stored. All the strings are combined (in order) into a single string and decoded back into binary, which is then stored as a file with the extension specified in the metadata.
 
-## FAQ
-Actually, not really. Nobody's asked these questions, but I'll answer them anyway.
+### Practical uses
 
-### What are practical uses for this?
+None, probably.
 
-I have no idea. This is something I made out of sheer boredom and curiosity.
+### Limitations
 
-### What's the largest amount of data I can store with this?
+  - The maximum storage capacity of a QR code (v40, low EC) is 2953 Bytes. There is a 33% overhead due to Base64, along with a 4-byte overhead due to the header, resulting in a maximum of about 2200 bytes of raw binary per code.
 
-Since the maximum storage capacity of a QR code (Version 40) is just over 3 KB and the packets are stored as a 32-bit integer, you could theoretically encode a 12TB file in 4,294,967,295 packets. Please don't do this.
+#### VERSION 2
+  - The packet ID is stored as a 32-bit unsigned int, allowing for up to 4,294,967,296 packets. With 2200 bytes per code, this would allow for approximately 9 TB of data.
 
-### What are the recommended settings?
+#### VERSION 3
+  - The packet ID is stored as a 24-bit unsigned int, allowing for up to 16,777,216 packets. With 2200 bytes per code, this would allow for approximately 37 GB of data.
 
-The recommended settings are included in the defaults. I have found this to be the best one-size-fits-all configuration which maximizes speed, accuracy, and practicality. As of 03/10/2021, that is:
+While Version 3 only takes advantage of packet types 0 (file data) and 1 (metadata), there can theoretically be up to 256 distinct packet "types". A future version could utilize this to split the packets into 255 groups of 37 GB each.
+
+### Recommended Settings
+
+The recommended settings are included in the defaults. I have found this to be the best one-size-fits-all configuration which maximizes speed, accuracy, and practicality. As of 5/20/2021, that is:
 - Version 20 QR code (-v 20)
-- 5 FPS (-f 5)
-- Redundancy interval of 4 (-r 4) with 2 redundant frames (-rf 2)
+- 3 FPS (-f 3)
