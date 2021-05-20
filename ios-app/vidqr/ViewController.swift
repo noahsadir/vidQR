@@ -22,10 +22,13 @@ class ViewController: UIViewController , AVCaptureMetadataOutputObjectsDelegate 
     var startTime = 0.0
     var finishedFirstRound = false
     var timeSinceLastCheck = 0.0
+    var repeatingPackets = 0
+    var missingPacket = 0
     
     var packets = [Int]()
     var packetData = [String]()
     
+    @IBOutlet weak var packetLabel: UILabel!
     
     @IBOutlet weak var percentageLabel: UILabel!
     
@@ -200,10 +203,11 @@ class ViewController: UIViewController , AVCaptureMetadataOutputObjectsDelegate 
                         var currentPacketID = -1
                         var currentQRData = String(stringValue.suffix(from: stringValue.index(stringValue.startIndex, offsetBy: 8)))
                         currentPacketID = Int(bigEndianBytesToInt32(array: [data[0],data[1],data[2],data[3]]))
-                        
+                        packetLabel.text = "Packet " + String(currentPacketID) + " (" + String(missingPacket) + ")"
                         
                         
                         var adjustedPacketIndex = (totalPackets - firstPacket) + currentPacketID
+                        
                         if packets.count == 0{
                             firstPacket = currentPacketID
                             startTime = Date().timeIntervalSince1970
@@ -215,7 +219,6 @@ class ViewController: UIViewController , AVCaptureMetadataOutputObjectsDelegate 
                             let packetSize = fileSize / totalPackets
                             let kilobytesPerSecond = String(format: "%.1f",(Double(packetSize * packets.count) / duration) / 1000)
                             statusLabel.text = kilobytesPerSecond + " KB/s"
-                            //print(kilobytesPerSecond)
                             
                             adjustedPacketIndex = currentPacketID - firstPacket
                         }
@@ -260,6 +263,14 @@ class ViewController: UIViewController , AVCaptureMetadataOutputObjectsDelegate 
                                 
                                 processData()
                             }
+                            
+                            for missingIndex in 0...totalPackets {
+                                if !packets.contains(missingIndex) {
+                                    missingPacket = missingIndex
+                                }
+                            }
+                        }else{
+                            repeatingPackets += 1
                         }
                         let missedPackets = adjustedPacketIndex - packets.count
                         if missedPackets < 0{
