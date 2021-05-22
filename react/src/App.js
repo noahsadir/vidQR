@@ -193,21 +193,21 @@ class VidQRReader extends React.Component {
       //Only scan if needed (for performance & privacy reasons)
       if (this.props.shouldScan) {
         if (this.props.scanVal != lastScan) {
-          const imageSrc = webcamRef?.current?.getScreenshot()
+          const imageSrc = webcamRef?.current?.getScreenshot();
           if (imageSrc) {
             //Decode barcode of desired type
             if (this.props.type == "QR") {
               qrcodeReader.decodeFromImage(undefined, imageSrc).then(result => {
                 lastScan = this.props.scanVal;
-                this.props.onUpdate(null, result)
+                this.props.onUpdate(null, result);
               }).catch((err) => {
-                this.props.onUpdate(err)
+                this.props.onUpdate(err);
               })
             } else if (this.props.type == "CODE_128") {
               barcodeReader.decodeFromImage(undefined, imageSrc).then(result => {
-                this.props.onUpdate(null, result)
+                this.props.onUpdate(null, result);
               }).catch((err) => {
-                this.props.onUpdate(err)
+                this.props.onUpdate(err);
               })
             }
           }
