@@ -292,11 +292,13 @@ class ViewController: UIViewController , AVCaptureMetadataOutputObjectsDelegate 
             qrCodeFrameView.frame = CGRect(x: 0, y: 0, width: 0, height: 0)
         }
         
-        if let metadataObject = metadataObjects.first {
+        for metadataObject in metadataObjects {
             guard let readableObject = metadataObject as? AVMetadataMachineReadableCodeObject else { return }
             guard let stringValue = readableObject.stringValue else { return }
             
-            if (output.metadataObjectTypes[0] == .qr){
+            if (output.metadataObjectTypes.contains(.qr)){
+                print(metadataObject)
+                print("found qr")
                 //Show QR code outline
                 let barCodeObject = previewLayer.transformedMetadataObject(for: metadataObject as! AVMetadataMachineReadableCodeObject) as! AVMetadataMachineReadableCodeObject
                 qrCodeFrameView.frame = barCodeObject.bounds

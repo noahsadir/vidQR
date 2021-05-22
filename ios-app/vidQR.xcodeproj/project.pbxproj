@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		FF5434DB2615599B00DE6E93 /* FactorialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF5434DA2615599B00DE6E93 /* FactorialViewController.swift */; };
 		FFF02A92256708E7004CB836 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFF02A91256708E7004CB836 /* AppDelegate.swift */; };
 		FFF02A94256708E7004CB836 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFF02A93256708E7004CB836 /* SceneDelegate.swift */; };
 		FFF02A96256708E7004CB836 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFF02A95256708E7004CB836 /* ViewController.swift */; };
@@ -36,7 +35,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		FF5434DA2615599B00DE6E93 /* FactorialViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FactorialViewController.swift; sourceTree = "<group>"; };
 		FF72EFB1256F48A200020567 /* vidqr.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = vidqr.entitlements; sourceTree = "<group>"; };
 		FFF02A8E256708E7004CB836 /* vidQR.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = vidQR.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FFF02A91256708E7004CB836 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -106,7 +104,6 @@
 				FFF02A91256708E7004CB836 /* AppDelegate.swift */,
 				FFF02A93256708E7004CB836 /* SceneDelegate.swift */,
 				FFF02A95256708E7004CB836 /* ViewController.swift */,
-				FF5434DA2615599B00DE6E93 /* FactorialViewController.swift */,
 				FFF02A97256708E7004CB836 /* Main.storyboard */,
 				FFF02A9A256708E7004CB836 /* Assets.xcassets */,
 				FFF02A9C256708E7004CB836 /* LaunchScreen.storyboard */,
@@ -267,7 +264,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FF5434DB2615599B00DE6E93 /* FactorialViewController.swift in Sources */,
 				FFF02A96256708E7004CB836 /* ViewController.swift in Sources */,
 				FFF02A92256708E7004CB836 /* AppDelegate.swift in Sources */,
 				FFF02A94256708E7004CB836 /* SceneDelegate.swift in Sources */,
