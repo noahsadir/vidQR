@@ -21,7 +21,7 @@ parser.add_argument('-p', '--path',default="",help="**REQUIRED** Input Path")
 parser.add_argument('-o', '--output',default="vidqr",help="Output Path [optional; default {WORKING_DIR}/vidqr.gif]")
 parser.add_argument('-v', '--version',default="20",help="Version btwn 1 and 40 [optional, default 10]")
 parser.add_argument('-e', '--errcorrect',default="0",help="Error correction level btwn 0 (low) and 3 (high) [optional; default 0]")
-parser.add_argument('-f', '--fps',default="5",help="Framerate [optional; defualt 5]")
+parser.add_argument('-f', '--fps',default="3",help="Framerate [optional; default 3]")
 parser.add_argument('-fl', '--flash',default="false",help="Animation flashes at every loop [optional; default false]")
 args = parser.parse_args()
 

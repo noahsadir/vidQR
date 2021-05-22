@@ -4,8 +4,6 @@ import React from 'react';
 import { BrowserQRCodeReader, BrowserBarcodeReader, Result, BarcodeFormat, DecodeHintType } from '@zxing/library'
 import Webcam from 'react-webcam'
 
-var Base64 = require('base-64');
-
 var packets = [];
 var extendedMetaPackets = [];
 
@@ -169,7 +167,6 @@ class DecoderView extends React.Component {
         <div style={{margin: 0, padding: 16, backgroundColor: "#000000AA", zIndex: 1}}>
           <p>{this.state.progress.foundVidQR ? "Scanning..." : "Searching for code"}</p>
           <p>{"Loaded " + packetsFound.toString() + " of " + packets.length.toString()}</p>
-          <p>{"Rejections: " + rejectedScans}</p>
         </div>
       </div>
     );
@@ -229,7 +226,6 @@ class VidQRReader extends React.Component {
         ref={this.webcamRef}
         audio={false}
         imageSmoothing={false}
-        screenshotQuality={0.80}
         screenshotFormat="image/png"
         videoConstraints={{
           facingMode: 'environment'
